@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Saneto Timer</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  </head>
+  <body>
+    <h1>Saneto Timer</h1>
+    Activity: <input type="text" id="inpActivity"/>
+    <button type="button" name="button" id="btnToggleCounting">Start</button>
+    <button type="button" name="button" id="btnClear">Clear</button>
+    <h1 id="elapsedTime"></h1>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <td>Activity</td>
+          <td>Duration</td>
+        </tr>
+      </thead>
+      <tbody id="activitiesTable">
+      </tbody>
+    </table>
+    <script>
+      var counter = null;
+      var startDate, endDate;
+
+      var btnToggleCounting = null;
+      var inpActivity = null;
+
+      var textCounter = null;
+
+      var activities = [];
+
+      window.onload = function(){
+
+        btnToggleCounting = document.getElementById("btnToggleCounting");
+        btnClear = document.getElementById("btnClear");
+        inpActivity = document.getElementById("inpActivity");
+        textCounter = document.getElementById("elapsedTime");
+
+        activities = getActivities();
+
+        printActivitiesTable();
+
+        btnToggleCounting.onclick = function(){
+          if(counter){
+            stopCounter();
+            printActivitiesTable();
+          }else{
+            startDate = new Date();
+            counter = setInterval(updateCounter, 1000)
+            btnToggleCounting.innerText = "End";
+          }
+        }
+
+        btnClear.onclick = function(){
+          activities = [];
+          setActivities(activities);
+          printActivitiesTable();
+        }
+
+
+      }
+
+      function updateCounter(){
+        endDate = new Date();
+        printElapsedTime();
+      }
+
+      function getDuration(){
+        return moment.duration(moment(endDate).diff(moment(startDate)));
+      }
+
+      function printElapsedTime(){
+        textCounter.innerText = getDuration();
+      }
+
+      function stopCounter(){
+        clearInterval(counter);
+        printElapsedTime();
+        btnToggleCounting.innerText = "Start";
+
+        activities.push({
+          activity: inpActivity.value,
+          duration: getDuration().toString()
+        });
+        setActivities();
+        startDate = null;
+        endDate = null;
+        counter = null;
+      }
+
+      function getActivities(){
+        var tmp = JSON.parse(localStorage.getItem("activities"));
+        if(Array.isArray(tmp)){
+          return tmp;
+        }else{
+          return [];
+        }
+      }
+
+      function setActivities(){
+        localStorage.setItem("activities", JSON.stringify(activities));
+      }
+
+      function printActivitiesTable(){
+        var tmpl = "<td>${activity}</td><td>${duration}</td>";
+        var tbl = document.getElementById("activitiesTable");
+        tbl.innerHTML = "";
+        activities.forEach((v) => {
+          var newLine = document.createElement("tr");
+          newLine.innerHTML = tmpl.replace("${activity}", v.activity).replace("${duration}", v.duration);
+          tbl.appendChild(newLine);
+        });
+      }
+
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js">
+    </script>
+  </body>
+</html>
