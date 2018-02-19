@@ -6,22 +6,24 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
   </head>
   <body>
-    <h1>Saneto Timer</h1>
-    Activity: <input type="text" id="inpActivity"/>
-    <button type="button" name="button" id="btnToggleCounting">Start</button>
-    <button type="button" name="button" id="btnClear">Clear</button>
-    <h1 id="elapsedTime"></h1>
+    <div class="container">
+      <h1>Saneto Timer</h1>
+      Activity: <input type="text" id="inpActivity"/>
+      <button type="button" name="button" id="btnToggleCounting">Start</button>
+      <button type="button" name="button" id="btnClear">Clear Table</button>
+      <h1 id="elapsedTime"></h1>
 
-    <table class="table">
-      <thead>
-        <tr>
-          <td>Activity</td>
-          <td>Duration</td>
-        </tr>
-      </thead>
-      <tbody id="activitiesTable">
-      </tbody>
-    </table>
+      <table class="table">
+        <thead>
+          <tr>
+            <td>Activity</td>
+            <td>Duration</td>
+          </tr>
+        </thead>
+        <tbody id="activitiesTable">
+        </tbody>
+      </table>
+    </div>
     <script>
       var counter = null;
       var startDate, endDate;
@@ -70,7 +72,10 @@
       }
 
       function getDuration(){
-        return moment.duration(moment(endDate).diff(moment(startDate)));
+        var duration = moment.duration(moment(endDate).diff(moment(startDate)));
+        return duration.hours().toString().padStart(2, "0")
+          +":"+duration.minutes().toString().padStart(2, "0")
+          +":"+duration.seconds().toString().padStart(2, "0");
       }
 
       function printElapsedTime(){
